@@ -26,7 +26,9 @@ class _RegistrationFormState extends State<RegistrationForm> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   String? _validateName(String? value) {
     if (value == null || value.isEmpty) {
@@ -45,6 +47,16 @@ class _RegistrationFormState extends State<RegistrationForm> {
     return null;
   }
 
+  String? _validatePhone(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your phone number';
+    }
+    if (!RegExp(r'^[0-9]{10}$').hasMatch(value)) {
+      return 'Please enter a valid 10-digit phone number';
+    }
+    return null;
+  }
+
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your password';
@@ -55,11 +67,25 @@ class _RegistrationFormState extends State<RegistrationForm> {
     return null;
   }
 
+  String? _validateConfirmPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please confirm your password';
+    }
+    if (value != _passwordController.text) {
+      return 'Passwords do not match';
+    }
+    return null;
+  }
+
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
+      // Form is valid, proceed with registration
       print('Name: ${_nameController.text}');
       print('Email: ${_emailController.text}');
+      print('Phone: ${_phoneController.text}');
       print('Password: ${_passwordController.text}');
+      print('Confirm Password: ${_confirmPasswordController.text}');
+      // You can add your registration logic here
     }
   }
 
@@ -73,7 +99,7 @@ class _RegistrationFormState extends State<RegistrationForm> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: Column(
+          child: ListView(
             children: [
               TextFormField(
                 controller: _nameController,
@@ -86,10 +112,22 @@ class _RegistrationFormState extends State<RegistrationForm> {
                 validator: _validateEmail,
               ),
               TextFormField(
+                controller: _phoneController,
+                decoration: InputDecoration(labelText: 'Phone Number'),
+                keyboardType: TextInputType.phone,
+                validator: _validatePhone,
+              ),
+              TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(labelText: 'Password'),
                 obscureText: true,
                 validator: _validatePassword,
+              ),
+              TextFormField(
+                controller: _confirmPasswordController,
+                decoration: InputDecoration(labelText: 'Confirm Password'),
+                obscureText: true,
+                validator: _validateConfirmPassword,
               ),
               SizedBox(height: 20),
               ElevatedButton(
@@ -107,7 +145,9 @@ class _RegistrationFormState extends State<RegistrationForm> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 }
